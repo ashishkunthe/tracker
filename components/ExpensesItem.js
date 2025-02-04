@@ -1,9 +1,18 @@
+import { useNavigation } from "@react-navigation/native";
 import { Pressable, Text, View, StyleSheet } from "react-native";
 
 function ExpensesItem({ expenseItem }) {
+  const navigation = useNavigation();
+
+  function ExpensePressHandler() {
+    navigation.navigate("Manage", {
+      expenseId: expenseItem.id,
+    });
+  }
   return (
     <Pressable
       style={({ pressed }) => [styles.container, pressed && styles.pressed]}
+      onPress={ExpensePressHandler}
     >
       <View style={styles.textContainer}>
         <Text style={styles.description}>{expenseItem.description}</Text>

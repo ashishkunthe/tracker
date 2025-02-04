@@ -3,12 +3,13 @@ import { createStackNavigator } from "@react-navigation/stack";
 import { Provider as PaperProvider, DefaultTheme } from "react-native-paper";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { Ionicons } from "@expo/vector-icons";
-import { StatusBar } from "react-native";
+import { Pressable, StatusBar } from "react-native";
 
 import WelcomeScreen from "./screens/WelcomeScreen";
 import RecentExpenses from "./screens/RecentExpenses";
 import AllExpenses from "./screens/AllExpenses";
 import ManageExpenses from "./screens/ManageExpenses";
+import ExpensesContextProvider from "./store/expenses-context";
 
 const Stack = createStackNavigator();
 const Tabs = createBottomTabNavigator();
@@ -29,7 +30,7 @@ const theme = {
 function BottomTabNav() {
   return (
     <Tabs.Navigator
-      screenOptions={{
+      screenOptions={({ navigation }) => ({
         tabBarStyle: { backgroundColor: theme.colors.card, borderTopWidth: 0 },
         tabBarActiveTintColor: theme.colors.primary,
         tabBarInactiveTintColor: "#B0B0B0",
@@ -37,14 +38,20 @@ function BottomTabNav() {
         headerTintColor: "#FFF",
         headerTitleStyle: { fontWeight: "bold", fontSize: 20 },
         headerRight: () => (
-          <Ionicons
-            name="add"
-            size={34}
-            color="white"
-            style={{ marginRight: 15, paddingRight: 10 }}
-          />
+          <Pressable
+            onPress={() => {
+              navigation.navigate("Manage");
+            }}
+          >
+            <Ionicons
+              name="add"
+              size={34}
+              color="white"
+              style={{ marginRight: 15, paddingRight: 10 }}
+            />
+          </Pressable>
         ),
-      }}
+      })}
     >
       <Tabs.Screen
         name="AllExpenses"
@@ -76,35 +83,37 @@ function BottomTabNav() {
 export default function App() {
   return (
     <PaperProvider theme={theme}>
-      <NavigationContainer>
-        <StatusBar
-          barStyle="light-content"
-          backgroundColor={theme.colors.primary}
-        />
-        <Stack.Navigator
-          screenOptions={{
-            headerStyle: { backgroundColor: theme.colors.primary },
-            headerTintColor: "#FFF",
-            headerTitleStyle: { fontWeight: "bold", fontSize: 20 },
-          }}
-        >
-          <Stack.Screen
-            name="Welcome"
-            component={WelcomeScreen}
-            options={{ headerShown: false }}
+      <ExpensesContextProvider>
+        <NavigationContainer>
+          <StatusBar
+            barStyle="light-content"
+            backgroundColor={theme.colors.primary}
           />
-          <Stack.Screen
-            name="Manage"
-            component={ManageExpenses}
-            options={{ headerShown: false }}
-          />
-          <Stack.Screen
-            name="expenses"
-            component={BottomTabNav}
-            options={{ headerShown: false }}
-          />
-        </Stack.Navigator>
-      </NavigationContainer>
+          <Stack.Navigator
+            screenOptions={{
+              headerStyle: { backgroundColor: theme.colors.primary },
+              headerTintColor: "#FFF",
+              headerTitleStyle: { fontWeight: "bold", fontSize: 20 },
+            }}
+          >
+            <Stack.Screen
+              name="Welcome"
+              component={WelcomeScreen}
+              options={{ headerShown: false }}
+            />
+            <Stack.Screen
+              name="Manage"
+              component={ManageExpenses}
+              options={{ headerShown: true, presentation: "modal" }}
+            />
+            <Stack.Screen
+              name="expenses"
+              component={BottomTabNav}
+              options={{ headerShown: false }}
+            />
+          </Stack.Navigator>
+        </NavigationContainer>
+      </ExpensesContextProvider>
     </PaperProvider>
   );
 }

@@ -35,7 +35,7 @@ const DUMMY_EXPENSES = [
   },
 ];
 
-function ExpensesOutput({ expenses = DUMMY_EXPENSES, expensesPeriod }) {
+function ExpensesOutput({ expenses, expensesPeriod }) {
   return (
     <View style={styles.container}>
       <ExpensesSummary expenses={expenses} periodName={expensesPeriod} />
