@@ -8,6 +8,7 @@ import { StatusBar } from "react-native";
 import WelcomeScreen from "./screens/WelcomeScreen";
 import RecentExpenses from "./screens/RecentExpenses";
 import AllExpenses from "./screens/AllExpenses";
+import ManageExpenses from "./screens/ManageExpenses";
 
 const Stack = createStackNavigator();
 const Tabs = createBottomTabNavigator();
@@ -90,6 +91,11 @@ export default function App() {
           <Stack.Screen
             name="Welcome"
             component={WelcomeScreen}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="Manage"
+            component={ManageExpenses}
             options={{ headerShown: false }}
           />
           <Stack.Screen
