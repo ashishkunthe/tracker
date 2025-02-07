@@ -1,13 +1,17 @@
 import { useContext, useLayoutEffect } from "react";
 import { Pressable, Text, View, StyleSheet } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import Button from "../ui/Button";
 import { ExpensesContext } from "../store/expenses-context";
+import ExpenseForm from "../components/ManageExpense/ExpenseForm";
 
 function ManageExpenses({ route, navigation }) {
   const editExpenseId = route.params?.expenseId;
   const isEditing = !!editExpenseId;
   const expensesCtx = useContext(ExpensesContext);
+
+  const selectedExpense = expensesCtx.expenses.find(
+    (expense) => expense.id === editExpenseId
+  );
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -24,35 +28,23 @@ function ManageExpenses({ route, navigation }) {
     navigation.goBack();
   }
 
-  function handleConfirm() {
+  function handleConfirm(expenseData) {
     navigation.goBack();
     if (isEditing) {
-      expensesCtx.updateExpense(editExpenseId, {
-        description: "Test!!!!!!",
-        amount: 29,
-        date: new Date("2025-4-6"),
-      });
+      expensesCtx.updateExpense(editExpenseId, expenseData);
     } else {
-      expensesCtx.addExpense({
-        description: "Test",
-        amount: 19,
-        date: new Date("2025-4-5"),
-      });
+      expensesCtx.addExpense(expenseData);
     }
   }
 
   return (
     <View style={styles.container}>
-      {/* Buttons */}
-      <View style={styles.buttonsContainer}>
-        <Button onPress={handleCancel} style={styles.button}>
-          Cancel
-        </Button>
-        <View style={styles.spacer} />
-        <Button onPress={handleConfirm} style={styles.button}>
-          Confirm
-        </Button>
-      </View>
+      <ExpenseForm
+        onCancel={handleCancel}
+        isEditing={isEditing}
+        onSubmit={handleConfirm}
+        defaultValue={selectedExpense}
+      />
 
       {/* Delete Section */}
       {isEditing && (
