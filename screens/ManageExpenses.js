@@ -1,11 +1,13 @@
-import { useLayoutEffect } from "react";
+import { useContext, useLayoutEffect } from "react";
 import { Pressable, Text, View, StyleSheet } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import Button from "../ui/Button";
+import { ExpensesContext } from "../store/expenses-context";
 
 function ManageExpenses({ route, navigation }) {
   const editExpenseId = route.params?.expenseId;
   const isEditing = !!editExpenseId;
+  const expensesCtx = useContext(ExpensesContext);
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -15,6 +17,7 @@ function ManageExpenses({ route, navigation }) {
 
   function deleteExpenseHandler() {
     navigation.goBack();
+    expensesCtx.deleteExpense(editExpenseId);
   }
 
   function handleCancel() {
@@ -23,6 +26,19 @@ function ManageExpenses({ route, navigation }) {
 
   function handleConfirm() {
     navigation.goBack();
+    if (isEditing) {
+      expensesCtx.updateExpense(editExpenseId, {
+        description: "Test!!!!!!",
+        amount: 29,
+        date: new Date("2025-4-6"),
+      });
+    } else {
+      expensesCtx.addExpense({
+        description: "Test",
+        amount: 19,
+        date: new Date("2025-4-5"),
+      });
+    }
   }
 
   return (
