@@ -1,10 +1,19 @@
 import { View, StyleSheet } from "react-native";
 import ExpensesOutput from "../components/ExpensesOutput";
-import { useContext } from "react";
+import { useContext, useEffect } from "react";
+import { fetchExpense } from "../utils/http";
 import { ExpensesContext } from "../store/expenses-context";
 
 function RecentExpenses() {
   const expensesCtx = useContext(ExpensesContext);
+
+  useEffect(() => {
+    async function getExpenses() {
+      const expenses = await fetchExpense();
+      expensesCtx.setExpense(expenses);
+    }
+    getExpenses(); // Correct function call
+  }, []);
 
   // Get current date and calculate 7 days ago
   const sevenDaysAgo = new Date();

@@ -3,6 +3,7 @@ import { Pressable, Text, View, StyleSheet } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { ExpensesContext } from "../store/expenses-context";
 import ExpenseForm from "../components/ManageExpense/ExpenseForm";
+import { storeExpenses } from "../utils/http";
 
 function ManageExpenses({ route, navigation }) {
   const editExpenseId = route.params?.expenseId;
@@ -33,6 +34,7 @@ function ManageExpenses({ route, navigation }) {
     if (isEditing) {
       expensesCtx.updateExpense(editExpenseId, expenseData);
     } else {
+      storeExpenses(expenseData);
       expensesCtx.addExpense(expenseData);
     }
   }
