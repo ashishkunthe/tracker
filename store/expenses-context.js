@@ -1,31 +1,35 @@
 import { createContext, useReducer } from "react";
+import {
+  storeExpenses,
+  fetchExpenses,
+  updateExpense,
+  deleteExpense,
+} from "../utils/http";
 
 // Context Definition
 export const ExpensesContext = createContext({
   expenses: [],
-  addExpense: (expenseData) => {},
-  setExpense: (expense) => {},
-  deleteExpense: (id) => {},
-  updateExpense: (id, expenseData) => {},
+  addExpense: async (expenseData) => {},
+  setExpenses: async () => {},
+  deleteExpense: async (id) => {},
+  updateExpense: async (id, expenseData) => {},
 });
 
 // Reducer Function
 function expensesReducer(state, action) {
   switch (action.type) {
     case "ADD":
-      return [{ ...action.payload, id: new Date().toString() }, ...state];
+      return [action.payload, ...state]; // Adds new expense at the top
     case "SET":
-      return action.payload;
+      return action.payload.reverse(); // Ensures latest expenses appear first
     case "DELETE":
       return state.filter((expense) => expense.id !== action.payload);
-
     case "UPDATE":
       return state.map((expense) =>
         expense.id === action.payload.id
           ? { ...expense, ...action.payload.data }
           : expense
       );
-
     default:
       return state;
   }
@@ -35,20 +39,44 @@ function expensesReducer(state, action) {
 function ExpensesContextProvider({ children }) {
   const [expensesState, dispatch] = useReducer(expensesReducer, []);
 
-  function addExpense(expenseData) {
-    dispatch({ type: "ADD", payload: expenseData });
+  // ✅ Fetch Expenses from Firebase & Set in State
+  async function setExpenses() {
+    try {
+      const expenses = await fetchExpenses();
+      dispatch({ type: "SET", payload: expenses });
+    } catch (error) {
+      console.error("Failed to fetch expenses:", error);
+    }
   }
 
-  function setExpense(expenses) {
-    dispatch({ type: "SET", payload: expenses });
+  // ✅ Add Expense to Firebase & Local State
+  async function addExpense(expenseData) {
+    try {
+      const id = await storeExpenses(expenseData); // Save to Firebase
+      dispatch({ type: "ADD", payload: { ...expenseData, id } });
+    } catch (error) {
+      console.error("Failed to add expense:", error);
+    }
   }
 
-  function deleteExpense(id) {
-    dispatch({ type: "DELETE", payload: id });
+  // ✅ Update Expense in Firebase & Local State
+  async function updateExpenseHandler(id, expenseData) {
+    try {
+      await updateExpense(id, expenseData); // Update in Firebase
+      dispatch({ type: "UPDATE", payload: { id, data: expenseData } });
+    } catch (error) {
+      console.error("Failed to update expense:", error);
+    }
   }
 
-  function updateExpense(id, expenseData) {
-    dispatch({ type: "UPDATE", payload: { id, data: expenseData } });
+  // ✅ Delete Expense from Firebase & Local State
+  async function deleteExpenseHandler(id) {
+    try {
+      await deleteExpense(id); // Remove from Firebase
+      dispatch({ type: "DELETE", payload: id });
+    } catch (error) {
+      console.error("Failed to delete expense:", error);
+    }
   }
 
   return (
@@ -56,9 +84,9 @@ function ExpensesContextProvider({ children }) {
       value={{
         expenses: expensesState,
         addExpense,
-        deleteExpense,
-        updateExpense,
-        setExpense,
+        setExpenses, // ✅ Renamed for clarity
+        deleteExpense: deleteExpenseHandler,
+        updateExpense: updateExpenseHandler,
       }}
     >
       {children}

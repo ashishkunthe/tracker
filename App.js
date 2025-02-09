@@ -54,17 +54,6 @@ function BottomTabNav() {
       })}
     >
       <Tabs.Screen
-        name="AllExpenses"
-        component={AllExpenses}
-        options={{
-          title: "All expenses",
-          tabBarLabel: "All",
-          tabBarIcon: ({ color, size }) => (
-            <Ionicons name="list" color={color} size={size} />
-          ),
-        }}
-      />
-      <Tabs.Screen
         name="RecentExpenses"
         component={RecentExpenses}
         options={{
@@ -72,6 +61,17 @@ function BottomTabNav() {
           tabBarLabel: "Recent",
           tabBarIcon: ({ color, size }) => (
             <Ionicons name="time" color={color} size={size} />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="AllExpenses"
+        component={AllExpenses}
+        options={{
+          title: "All expenses",
+          tabBarLabel: "All",
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="list" color={color} size={size} />
           ),
         }}
       />
